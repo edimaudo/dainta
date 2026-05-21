@@ -125,7 +125,7 @@
         <div class="bg-white dark:bg-slate-950 rounded-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto p-8 border border-gray-200 dark:border-slate-800 shadow-xl" onclick="event.stopPropagation()">
             <div class="flex justify-between items-start mb-6">
                 <div>
-                    <h2 class="text-xs font-semibold tracking-wider text-gray-400 uppercase mb-1">Name</h2>
+                    <!-- <h2 class="text-xs font-semibold tracking-wider text-gray-400 uppercase mb-1">Name</h2> -->
                     <h1 id="modalName" class="text-3xl font-extrabold text-gray-900 dark:text-slate-50"></h1>
                 </div>
                 <button type="button" class="text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 transition" onclick="closeFrameworkDetails()" aria-label="Close Details">
@@ -184,7 +184,7 @@
     }
 
     function openFrameworkDetails(framework) {
-        //document.getElementById('modalName').innerText = framework.name || '';
+        document.getElementById('modalName').innerText = framework.name || '';
         document.getElementById('modalDesc').innerText = framework.desc || '';
         document.getElementById('modalWhy').innerText = framework.why || '';
         document.getElementById('modalWhen').innerText = framework.when || '';
