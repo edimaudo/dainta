@@ -43,11 +43,12 @@
     async function submitToFramer() {
         const input = document.getElementById('messyInput').value;
         const btn = document.getElementById('frameBtn');
-        
+
         if (!input) return alert("Please enter a problem first.");
-        
+
         btn.innerText = "Analyzing...";
         btn.disabled = true;
+        const startTime = Date.now();
 
         try {
             const response = await fetch('/framer', {
@@ -56,16 +57,41 @@
                 body: JSON.stringify({ messyInput: input })
             });
             const data = await response.json();
-            
+            const responseTimeMs = Date.now() - startTime;
+
             if(data.success) {
                 document.getElementById('cleanProblem').value = data.framedProblem;
+                originalFramedProblem = data.framedProblem;
                 document.getElementById('hitlSection').classList.remove('hidden');
                 document.getElementById('hitlSection').scrollIntoView({ behavior: 'smooth' });
+
+                if (typeof pendo !== 'undefined') {
+                    pendo.track("problem_framing_completed", {
+                        input_length: input.length,
+                        framed_problem_length: data.framedProblem.length,
+                        processing_success: true,
+                        response_time_ms: responseTimeMs
+                    });
+                }
             } else {
+                if (typeof pendo !== 'undefined') {
+                    pendo.track("problem_framing_failed", {
+                        input_length: input.length,
+                        error_type: "api_error",
+                        error_message: "Non-success response"
+                    });
+                }
                 alert("Error framing problem.");
             }
         } catch (error) {
             console.error(error);
+            if (typeof pendo !== 'undefined') {
+                pendo.track("problem_framing_failed", {
+                    input_length: input.length,
+                    error_type: "connection_error",
+                    error_message: String(error.message).substring(0, 100)
+                });
+            }
             alert("Connection error.");
         } finally {
             btn.innerText = "Frame My Problem";
@@ -73,8 +99,19 @@
         }
     }
 
+    let originalFramedProblem = '';
+
     function approveAndProceed() {
         const cleanProblemText = document.getElementById('cleanProblem').value;
+
+        if (typeof pendo !== 'undefined') {
+            pendo.track("problem_statement_approved", {
+                approved_problem_length: cleanProblemText.length,
+                was_problem_edited: originalFramedProblem !== '' && cleanProblemText !== originalFramedProblem,
+                original_framed_length: originalFramedProblem.length
+            });
+        }
+
         localStorage.setItem('Dainta_clean_problem', cleanProblemText);
         window.location.href = "/app";
     }

@@ -167,19 +167,40 @@
 </div>
 
 <script>
+    let _searchDebounceTimer = null;
+
     function filterFrameworks() {
         const input = document.getElementById('frameworkSearch').value.toLowerCase();
         const items = document.getElementsByClassName('framework-item');
-        
+        let visibleCount = 0;
+
         for (let item of items) {
             const title = item.getElementsByTagName('h3')[0].innerText.toLowerCase();
             const desc = item.getElementsByTagName('p')[0].innerText.toLowerCase();
-            
+
             if (title.includes(input) || desc.includes(input)) {
                 item.style.display = "block";
+                visibleCount++;
             } else {
                 item.style.display = "none";
             }
+        }
+
+        // Debounced Pendo tracking — fires after 500ms pause in typing
+        clearTimeout(_searchDebounceTimer);
+        if (input.length > 0) {
+            const totalCount = items.length;
+            const query = input;
+            const results = visibleCount;
+            _searchDebounceTimer = setTimeout(function() {
+                if (typeof pendo !== 'undefined') {
+                    pendo.track("framework_search_executed", {
+                        search_query: query.substring(0, 100),
+                        results_count: results,
+                        total_frameworks_count: totalCount
+                    });
+                }
+            }, 500);
         }
     }
 
