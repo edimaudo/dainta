@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dainta - Decision Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            transition: background-color 0.2s ease, color 0.2s ease, font-size 0.15s ease; 
+        }
+        /* Strict global state mapping configurations for text controls */
+        body.font-size-small { font-size: 8px !important; }
+        body.font-size-medium { font-size: 14px !important; }
+        body.font-size-large { font-size: 16px !important; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col min-h-screen font-size-large">
+    <nav class="border-b border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-950 sticky top-0 z-50 transition-colors">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <a href="/" class="text-xl font-bold text-blue-600 dark:text-blue-400 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-md">Dainta</a>
+            
+            <div class="flex items-center space-x-6 text-sm font-medium text-gray-600 dark:text-slate-300">
+                <div class="hidden md:flex space-x-6">
+                    <a href="/decision-information" class="hover:text-blue-600 dark:hover:text-blue-400 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-md">Decision Frameworks</a>
+                    <a href="/framer" class="hover:text-blue-600 dark:hover:text-blue-400 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-md">Problem Framing</a>
+                    <a href="/app" class="hover:text-blue-600 dark:hover:text-blue-400 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-md">Solution Design</a>
+                </div>
+                
+                <span class="h-4 w-px bg-gray-200 dark:bg-slate-700 hidden md:inline" aria-hidden="true"></span>
+
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-1 bg-gray-100 dark:bg-slate-800 p-1 rounded-lg" role="group" aria-label="Font sizing profile rules">
+                        <button onclick="setFontSize('small')" id="btn-size-small" class="px-2 py-1 text-xs rounded hover:bg-white dark:hover:bg-slate-700 transition focus:ring-2 focus:ring-blue-500 focus:outline-none" aria-label="Set structural font sizing scale to small (8 pixels)">A-</button>
+                        <button onclick="setFontSize('medium')" id="btn-size-medium" class="px-2 py-1 text-xs rounded hover:bg-white dark:hover:bg-slate-700 transition focus:ring-2 focus:ring-blue-500 focus:outline-none" aria-label="Set structural font sizing scale to medium (14 pixels)">A</button>
+                        <button onclick="setFontSize('large')" id="btn-size-large" class="px-2 py-1 text-xs rounded bg-white dark:bg-slate-600 font-bold transition focus:ring-2 focus:ring-blue-500 focus:outline-none" aria-label="Set structural font sizing scale to large (16 pixels, default option)">A+</button>
+                    </div>
+
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition focus:ring-2 focus:ring-blue-500 focus:outline-none" aria-label="Toggle structural dark display color mode configuration">
+                        <svg id="sun-icon" class="h-4 w-4 text-amber-500 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364-6.364l-.707.707M6.343 17.657l-.707.707M16.243 17.657l.707.707M6.343 6.343l.707-.707M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <svg id="moon-icon" class="h-4 w-4 text-slate-700 dark:text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="bg-white dark:bg-slate-950 border-t border-gray-200 dark:border-slate-800 py-12 transition-colors">
+        <div class="max-w-7xl mx-auto px-6 text-center text-gray-500 dark:text-slate-400 text-sm">
+            &copy; 2026 Dainta
+        </div>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                sunIcon.classList.add('hidden');
+                moonIcon.classList.remove('hidden');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        function setFontSize(size) {
+            const body = document.body;
+            body.classList.remove('font-size-small', 'font-size-medium', 'font-size-large');
+            
+            if (size === 'small') body.classList.add('font-size-small');
+            else if (size === 'medium') body.classList.add('font-size-medium');
+            else body.classList.add('font-size-large');
+
+            localStorage.setItem('fontSizePreference', size);
+            updateUIFontSizeControls(size);
+        }
+
+        function updateUIFontSizeControls(activeSize) {
+            ['small', 'medium', 'large'].forEach(size => {
+                const btn = document.getElementById(`btn-size-${size}`);
+                if (btn) {
+                    if (size === activeSize) {
+                        btn.classList.add('bg-white', 'dark:bg-slate-600', 'font-bold');
+                    } else {
+                        btn.classList.remove('bg-white', 'dark:bg-slate-600', 'font-bold');
+                    }
+                }
+            });
+        }
+
+        // Initialize user preferences immediately on document interactive load
+        (function() {
+            const cachedTheme = localStorage.getItem('theme');
+            if (cachedTheme === 'dark' || (!cachedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const sunIcon = document.getElementById('sun-icon');
+            const moonIcon = document.getElementById('moon-icon');
+            if (document.documentElement.classList.contains('dark')) {
+                sunIcon.classList.remove('hidden');
+                moonIcon.classList.add('hidden');
+            }
+            const cachedSize = localStorage.getItem('fontSizePreference') || 'large';
+            setFontSize(cachedSize);
+        });
+    </script>
+</body>
+</html>
