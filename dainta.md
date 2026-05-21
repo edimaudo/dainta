@@ -1,13 +1,7 @@
 # Dainta
 
 ## Idea
-I would like to validate an idea. Score it on a scale of 1 to 10 based on the track information and judging criteria.  Show your reasoning. The idea is called Dainta, it is to help make better decisions.  It is going to leverage the ARIA.ai platform.  It will be used in two ways, framer and solution design.  The framer, would take peoples messy problems and put it into a more cohesive manner. It would leverage tools like 7 thinking hats, design thinking, 5 whys etc. The solution design will leverage decision frameworks such as cost benefit analysis, porters 5 forces. The user would be able to choose the framework they want to use or leverage Aria to help them choose.  Lastly, it would have a decision framework directory where users can learn about different decision frameworks with the ability to learn more about it. 
-
-## Track info
-Track 2: Active Agents
-Orchestrate intelligence across your entire tech stack.
-
-Design sophisticated multi-agent workflows that autonomously gather data, make decisions, and perform actions across 2+ systems. Build the autonomous workforce of tomorrow.
+I would like to validate an idea. The idea is called Dainta, it is to help make better decisions.  It is going to leverage the AIRIA.ai platform.  It will be used in two ways, framer and solution design.  The framer, would take peoples messy problems and put it into a more cohesive manner. It would leverage tools like 7 thinking hats, design thinking, 5 whys etc. The solution design will leverage decision frameworks such as cost benefit analysis, porters 5 forces. The user would be able to choose the framework they want to use or leverage Aria to help them choose.  Lastly, it would have a decision framework directory where users can learn about different decision frameworks with the ability to learn more about it. 
 
 Key Capabilities:
 
@@ -18,34 +12,8 @@ Key Capabilities:
 ⚡ Automated cross-platform workflows
 Think: Contract analysis pipelines, automated compliance monitoring systems, intelligent customer onboarding workflows, or research agents that synthesize information from multiple sources.
 
-## Judging criteria
-Technological Implementation
-Does the project demonstrate quality software development? Does the project thoroughly leverage the required tool? How is the quality of the code?
-Design
-Is the user experience and design of the project well thought out? Is there a balanced blend of frontend and backend in the software?
-Potential Impact
-How big of an impact could the project have on the enterprise? How big of an impact could it have in the market?
-Quality of Idea
-How creative and unique is the project? Does the concept exist already? If so, how much does the project improve on it? *
-
-Helvetica, Century Schoolbook, Montserrat, Lato
-
-## build info
-- testing
-- submission info
-- submission video
-
-### bad text test
-
-
-
-## Aria information
-url -->
-guid -->
-userid -->
-
-# prompt builder starter kit
-
+## Font Selection
+Inter, Helvetica, Century Schoolbook, Montserrat, Lato
 
 # Solution Design instructions
 
