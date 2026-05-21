@@ -78,7 +78,7 @@
   {"id": "hickam-dictum", "name": "Hickam’s Dictum", "desc": "Decision principle: 'Patients can have as many diseases as they damn well please'.", "why": "To guard against oversimplifying complex, multi-causal real-world failures.", "when": "Root-cause analysis of complex, simultaneous system failures.", "how": "Avoid forcing all symptoms into a single root cause; investigate multiple, independent errors occurring at once."},
   {"id": "occam-razor", "name": "Occam’s Razor", "desc": "Decision principle: The simplest explanation is usually the best one.", "why": "To eliminate unnecessary assumptions and speed up operational debugging.", "when": "Initial triage of unexpected system anomalies or unexplained behaviors.", "how": "Formulate hypotheses and test the explanation that requires the fewest unproven assumptions first."},
   {"id": "occam-broom", "name": "Occam’s Broom", "desc": "Cognitive bias: Sweeping inconvenient data under the rug to maintain the simplest hypothesis.", "why": "To remain alert to operational self-deception and hidden systemic risks.", "when": "Reviewing post-incident reports or analyzing favorable experimental data.", "how": "Actively search for outliers, anomalies, or excluded data points that were omitted from the summary."},
-  {"id": "outcome-bias", "name": "Outcome Bias", "desc": "Cognitive bias: Judging a decision based on the final outcome, rather than decision quality.", "why": "To foster a healthy culture that rewards rigorous analysis over lucky gambling.", "when": "Performance reviews, post-mortems, or investment retrospective audits.", "how": "Evaluate the inputs, data, and logic available *at the time of the choice*, completely independent of the final result."},
+  {"id": "outcome-bias", "name": "Outcome Bias", "desc": "Cognitive bias: Judging a decision based on the final outcome, rather than decision quality.", "why": "To foster a healthy culture that rewards geographic analysis over lucky gambling.", "when": "Performance reviews, post-mortems, or investment retrospective audits.", "how": "Evaluate the inputs, data, and logic available *at the time of the choice*, completely independent of the final result."},
   {"id": "principle-agent-problem", "name": "Principle-Agent Problem", "desc": "Conflict of interest when an agent acts on behalf of a principal.", "why": "To align employee or partner behavior with overarching organizational goals.", "when": "Designing compensation plans, corporate governance frameworks, or vendor contracts.", "how": "Implement incentives, performance-based metrics, and auditing structures that bind the agent's upside to the principal's success."},
   {"id": "mendelow-matrix", "name": "Mendelow Stakeholder Matrix", "desc": "Map stakeholders by Power and Interest to determine strategy.", "why": "To optimize corporate communication efforts and manage stakeholder resistance.", "when": "Launching major organizational transformations or high-impact projects.", "how": "Plot stakeholders on a 2x2 grid of Power vs. Interest; manage closely, keep satisfied, keep informed, or monitor."},
   {"id": "go-no-go", "name": "Go/No-Go Decision Making", "desc": "Simple binary decision point for project continuation.", "why": "To enforce clear off-ramps and prevent the sunk cost fallacy.", "when": "Transitioning between distinct, costly phases of a product deployment.", "how": "Establish strict, quantifiable criteria beforehand; evaluate metrics at the gate to decisively execute or halt."},
@@ -113,7 +113,7 @@
 
         {% for f in frameworks %}
         <button type="button" 
-                class="framework-item framework-card text-left w-full bg-white dark:bg-slate-950 p-6 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="framework-item framework-card text-left w-full bg-white dark:bg-slate-950 p-6 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 transform-gpu will-change-transform"
                 onclick="openFrameworkDetails({{ f | tojson | forceescape }})">
             <h3 class="text-xl font-bold text-blue-600 dark:text-blue-400 mb-2">{{ f.name }}</h3>
             <p class="text-gray-600 dark:text-slate-300 text-sm leading-relaxed">{{ f.desc }}</p>
@@ -185,7 +185,6 @@
             }
         }
 
-        // Debounced Pendo tracking — fires after 500ms pause in typing
         clearTimeout(_searchDebounceTimer);
         if (input.length > 0) {
             const totalCount = items.length;
@@ -212,7 +211,7 @@
         
         const modal = document.getElementById('detailsModal');
         modal.classList.remove('hidden');
-        document.body.classList.add('overflow-hidden'); // Disable background scrolling
+        document.body.classList.add('overflow-hidden');
     }
 
     function closeFrameworkDetails() {
@@ -221,7 +220,6 @@
         document.body.classList.remove('overflow-hidden');
     }
 
-    // Close modal on Escape key press
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             closeFrameworkDetails();
