@@ -3,14 +3,19 @@
 ## Idea
 I would like to validate an idea. The idea is called Dainta, it is to help make better decisions.  It is going to leverage the AIRIA.ai platform.  It will be used in two ways, framer and solution design.  The framer, would take peoples messy problems and put it into a more cohesive manner. It would leverage tools like 7 thinking hats, design thinking, 5 whys etc. The solution design will leverage decision frameworks such as cost benefit analysis, porters 5 forces. The user would be able to choose the framework they want to use or leverage Aria to help them choose.  Lastly, it would have a decision framework directory where users can learn about different decision frameworks with the ability to learn more about it. 
 
-Key Capabilities:
+AIRIA Key Capabilities:
 
 🤝 Multi-system integrations
+
 👤 Human-in-the-loop (HITL) decision points
+
 📄 Dynamic document generation
+
 🔄 Nested agent architectures
+
 ⚡ Automated cross-platform workflows
-Think: Contract analysis pipelines, automated compliance monitoring systems, intelligent customer onboarding workflows, or research agents that synthesize information from multiple sources.
+
+It can be used for Contract analysis pipelines, automated compliance monitoring systems, intelligent customer onboarding workflows, or research agents that synthesize information from multiple sources.
 
 ## Font Selection
 Inter, Helvetica, Century Schoolbook, Montserrat, Lato
