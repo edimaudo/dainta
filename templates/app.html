@@ -210,37 +210,70 @@
         }
 
         const selectedId = window.appState.selectedFrameworks[0] || 'auto-select';
+        const isAutoSelect = selectedId === 'auto-select';
+        const problemSource = manualVal.length > 0 ? 'manual_entry' : 'framer';
         const btn = document.getElementById('generateBtn');
-        
+
         btn.innerText = "Architecting Solution...";
         btn.disabled = true;
+        const startTime = Date.now();
 
         try {
             const response = await fetch('/app', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     problem: window.appState.cleanProblem,
                     framework_id: selectedId
                 })
             });
-            
+
             const data = await response.json();
-            
+            const responseTimeMs = Date.now() - startTime;
+
             if(data.success) {
                 const resDiv = document.getElementById('result-content');
                 const renderArea = document.getElementById('analysis-render-area');
-                
+
                 resDiv.classList.remove('hidden');
-                renderArea.innerHTML = data.analysisData; 
-                
+                renderArea.innerHTML = data.analysisData;
+
                 document.getElementById('step-content').classList.add('hidden');
                 document.getElementById('nav-container').classList.add('hidden');
                 document.getElementById('input-section').classList.add('hidden');
+
+                if (typeof pendo !== 'undefined') {
+                    pendo.track("solution_generation_completed", {
+                        framework_id: selectedId,
+                        is_auto_select: isAutoSelect,
+                        problem_length: window.appState.cleanProblem.length,
+                        solution_length: (data.analysisData || '').length,
+                        problem_source: problemSource,
+                        response_time_ms: responseTimeMs
+                    });
+                }
             } else {
+                if (typeof pendo !== 'undefined') {
+                    pendo.track("solution_generation_failed", {
+                        framework_id: selectedId,
+                        is_auto_select: isAutoSelect,
+                        problem_length: window.appState.cleanProblem.length,
+                        error_type: "logic_error",
+                        error_message: String(data.error || "Unknown error").substring(0, 100)
+                    });
+                }
                 alert("Logic Error: " + (data.error || "Unknown error"));
             }
         } catch (error) {
+            if (typeof pendo !== 'undefined') {
+                pendo.track("solution_generation_failed", {
+                    framework_id: selectedId,
+                    is_auto_select: isAutoSelect,
+                    problem_length: window.appState.cleanProblem.length,
+                    error_type: "network_error",
+                    error_message: String(error.message || "Connection failed").substring(0, 100)
+                });
+            }
             alert("Network Error: Connection to Dainta failed.");
         } finally {
             btn.innerText = "Generate Solution";
