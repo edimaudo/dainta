@@ -20,6 +20,15 @@
         body.font-size-medium { font-size: 14px !important; }
         body.font-size-large { font-size: 20px !important; }
     </style>
+    <script>
+    (function(apiKey){
+        (function(p,e,n,d,o){var v,w,x,y,z;o=p[d]=p[d]||{};o._q=o._q||[];
+        v=['initialize','identify','updateOptions','pageLoad','track', 'trackAgent'];for(w=0,x=v.length;w<x;++w)(function(m){
+        o[m]=o[m]||function(){o._q[m===v[0]?'unshift':'push']([m].concat([].slice.call(arguments,0)));};})(v[w]);
+        y=e.createElement(n);y.async=!0;y.src='https://cdn.pendo.io/agent/static/'+apiKey+'/pendo.js';
+        z=e.getElementsByTagName(n)[0];z.parentNode.insertBefore(y,z);})(window,document,'script','pendo');
+    })('dad977c5-8692-4688-afcd-28d60f517f68');
+    </script>
     {% block head %}{% endblock %}
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 flex flex-col min-h-screen font-size-large">
@@ -119,6 +128,11 @@
         })();
 
         document.addEventListener("DOMContentLoaded", () => {
+            pendo.initialize({
+                visitor: {
+                    id: ''
+                }
+            });
             const sunIcon = document.getElementById('sun-icon');
             const moonIcon = document.getElementById('moon-icon');
             if (document.documentElement.classList.contains('dark')) {
