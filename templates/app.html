@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    :root {
+        --elevate-1: rgba(0,0,0, .03);
+        --elevate-2: rgba(0,0,0, .05);
+    }
+    .font-inter { font-family: 'Inter', sans-serif; }
+    .font-body { font-family: 'IBM Plex Sans', sans-serif; }
+    .card-elevate { transition: all 0.3s ease; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1rem; cursor: pointer; }
+    .dark .card-elevate { border-color: #334155; }
+    .card-elevate:hover { transform: translateY(-2px); }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    .dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-6 py-12">
+    <div id="input-section">
+        <div id="validatedHeader" class="mb-8 bg-blue-50 dark:bg-slate-950 border border-blue-200 dark:border-blue-900 rounded-2xl p-6 hidden">
+            <h3 class="text-sm font-bold text-blue-900 dark:text-blue-400 uppercase tracking-wider mb-2">Validated Problem Statement</h3>
+            <p id="displayProblem" class="text-blue-800 dark:text-slate-200 font-medium"></p>
+            <button onclick="clearProblem()" class="mt-2 text-xs text-blue-600 dark:text-blue-400 underline focus:ring-2 focus:ring-blue-500 focus:outline-none rounded">Change problem</button>
+        </div>
+
+        <div id="directEntryBox" class="mb-8 bg-gray-50 dark:bg-slate-950 border border-gray-200 dark:border-slate-800 rounded-2xl p-6 hidden">
+            <h3 class="text-sm font-bold text-gray-900 dark:text-slate-200 uppercase tracking-wider mb-2">Enter Structured Problem</h3>
+            <textarea id="manualProblemInput" rows="6" 
+                      placeholder="Describe the problem you want to solve..."
+                      aria-label="Structured problem text area input"
+                      class="w-full p-4 border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none font-body"></textarea>
+        </div>
+    </div>
+
+    <div id="step-content" class="bg-white dark:bg-slate-950 rounded-3xl p-8 min-h-[500px] shadow-sm border border-gray-100 dark:border-slate-900 transition-colors"></div>
+    
+    <div id="nav-container" class="mt-8 flex justify-end items-center">
+        <button id="generateBtn" onclick="runAgentTwo()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 hidden focus:ring-2 focus:ring-blue-400 focus:outline-none transition">
+            Generate Solution
+        </button>
+    </div>
+
+    <div id="result-content" class="mt-8 bg-white dark:bg-slate-950 rounded-3xl p-8 shadow-sm border border-gray-100 dark:border-slate-900 hidden prose max-w-none transition-colors">
+        <div class="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-slate-800 pb-4">
+            <h2 class="text-xl font-bold text-gray-900 dark:text-slate-50 font-inter">Solution Design Output</h2>
+            <button onclick="goBackToSelection()" class="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded">
+                ← Back to Frameworks
+            </button>
+        </div>
+        <div id="analysis-render-area" class="whitespace-pre-wrap font-body text-gray-800 dark:text-slate-200 text-lg leading-relaxed"></div>
+    </div>
+</div>
+
+<script>
+    const FRAMEWORKS = [
+        { id: "auto-select", name: "Auto-Select", desc: "Let Dainta analyze your problem and automatically apply the most effective framework." },
+        { id: "swot", name: "SWOT Analysis", desc: "Evaluate Strengths, Weaknesses, Opportunities, and Threats" },
+        { id: "porter-five-forces", name: "Porter's Five Forces", desc: "Assess competitive dynamics and market forces" },
+        { id: "first-principles", name: "First Principles", desc: "Break down complex problems to fundamental truths" },
+        { id: "design-thinking", name: "Design Thinking", desc: "Human-centered iterative problem-solving approach" },
+        { id: "csd-matrix", name: "CSD Matrix", desc: "Analyze Certainties, Suppositions, and Doubts" },
+        { id: "golden-circle", name: "Golden Circle", desc: "Start with Why - Purpose, How, and What framework" },
+        { id: "cynefin", name: "The Cynefin Framework", desc: "Understand decision context: simple, complicated, complex, or chaotic" },
+        { id: "decision-matrix", name: "Decision Matrix", desc: "Quantitatively compare options against weighted criteria" },
+        { id: "rice-ice", name: "RICE/ICE", desc: "Prioritization frameworks: Reach, Impact, Confidence, Effort" },
+        { id: "decision-trees", name: "Decision Trees", desc: "Visualize potential outcomes, costs, and consequences" },
+        { id: "impact-effort-matrix", name: "Impact Effort Matrix", desc: "Prioritize based on potential impact versus required effort" },
+        { id: "ooda-loop", name: "OODA Loop", desc: "Observe, Orient, Decide, Act—a rapid decision-making cycle" },
+        { id: "spade", name: "S.P.A.D.E", desc: "Setting, People, Alternatives, Decide, Explain process" },
+        { id: "pdca", name: "PDCA (Plan-Do-Check-Act)", desc: "Iterative management for continuous improvement" },
+        { id: "rapid", name: "RAPID framework", desc: "Define roles: Recommend, Agree, Perform, Input, Decide" },
+        { id: "vroom-yetton", name: "Vroom-Yetton model", desc: "Determine optimum degree of participation in decisions" },
+        { id: "star-model", name: "STAR model", desc: "Task, Action, Result—used for review and interviewing" },
+        { id: "wrap", name: "WRAP framework", desc: "Widen options, Reality-test, Attain distance, Prepare to be wrong" },
+        { id: "bridges", name: "BRIDGeS framework", desc: "Facilitation technique for structuring brainstorming" },
+        { id: "tdodar", name: "TDODAR model", desc: "Time, Diagnose, Options, Decide, Assign, Review" },
+        { id: "daci", name: "DACI framework", desc: "Define roles: Driver, Approver, Contributor, Informed" },
+        { id: "ladder-of-inference", name: "Ladder of inference", desc: "Trace how beliefs and assumptions lead to actions" },
+        { id: "mcda", name: "MCDA", desc: "Evaluate options against multiple conflicting criteria" },
+        { id: "rpd", name: "Recognition-Primed (RPD)", desc: "Decisions in high-pressure, time-constrained situations" },
+        { id: "maut", name: "MAUT", desc: "Calculating utility of multi-dimensional choices" },
+        { id: "foursquare-protocol", name: "Foursquare Protocol", desc: "Structured method for generating and prioritizing ideas" },
+        { id: "lightning-decision-jam", name: "Lightning Decision Jam", desc: "Rapid workshop for problem-solving" },
+        { id: "pareto-analysis", name: "Pareto Analysis", desc: "80/20 Rule—identifying the vital few contributors" },
+        { id: "fmea", name: "FMEA", desc: "Systematically identify and mitigate potential failures" },
+        { id: "blindspot-analysis", name: "Blindspot Analysis", desc: "Identify overlooked assumptions or external factors" },
+        { id: "comparable-company", name: "Comparable Company Analysis", desc: "Valuation using metrics from similar companies" },
+        { id: "cost-benefit", name: "Cost-Benefit Analysis", desc: "Evaluate total costs and benefits of a project" },
+        { id: "agile-ba", name: "Agile Business Analysis", desc: "Applying BA practices within an Agile environment" },
+        { id: "soar-analysis", name: "SOAR Analysis", desc: "Strengths, Opportunities, Aspirations, Results" },
+        { id: "steeple", name: "STEEPLE Analysis", desc: "Social, Tech, Econ, Enviro, Political, Legal, Ethical" },
+        { id: "pestel", name: "PESTEL Analysis", desc: "Political, Economic, Social, Tech, Enviro, Legal" },
+        { id: "destep", name: "DESTEP Analysis", desc: "Demographics, Economy, Social, Tech, Ecology, Politics" },
+        { id: "paired-comparison", name: "Paired Comparison", desc: "Prioritization by comparing each item against others" },
+        { id: "hickam-dictum", name: "Hickam’s Dictum", desc: "Principle: Patients can have as many diseases as they please" },
+        { id: "occam-razor", name: "Occam’s Razor", desc: "The simplest explanation is usually the best one" },
+        { id: "occam-broom", "name": "Occam’s Broom", desc: "Cognitive bias: Sweeping inconvenient data under the rug" },
+        { id: "outcome-bias", name: "Outcome Bias", desc: "Judging a decision based on the final outcome" },
+        { id: "principle-agent", name: "Principle-Agent Problem", desc: "Conflict when one acts on behalf of another" },
+        { id: "mendelow", name: "Mendelow Matrix", desc: "Map stakeholders by Power and Interest" },
+        { id: "go-no-go", name: "Go/No-Go", desc: "Simple binary decision point for project continuation" },
+        { id: "mckinsey-7-degrees", name: "McKinsey 7 Degrees", desc: "Strategic growth from expanding the core to white spaces" },
+        { id: "x-matrix", name: "X-Matrix", desc: "Hoshin Kanri tool for deploying strategy" },
+        { id: "bcg-matrix", name: "BCG Growth-Share Matrix", desc: "Portfolio planning based on market growth/share" },
+        { id: "ansoff-matrix", name: "Ansoff's Matrix", desc: "Market Penetration, Development, Diversification" },
+        { id: "scenario-planning", name: "Scenario Planning Matrix", desc: "Develop strategies against multiple plausible futures" },
+        { id: "strategic-planning", name: "Strategic Planning", desc: "Defining strategy and allocating resources" },
+        { id: "balanced-scorecard", name: "Balanced Scorecard", desc: "Measure performance from four key perspectives" },
+        { id: "capability-opp", name: "Capability vs Opportunity", desc: "Assess internal skills against market gaps" },
+        { id: "strategy-house", name: "McKinsey Strategy House", desc: "Building a comprehensive corporate strategy" },
+        { id: "risk-matrix", name: "Risk Matrix", desc: "Assess risk by probability vs. impact severity" },
+        { id: "growth-readiness", name: "Growth Readiness", desc: "Evaluate preparedness for scaling operations" },
+        { id: "strategy-formulation", name: "Strategy Formulation", desc: "General guidance on creating a viable strategy" },
+        { id: "corp-strategy-proc", name: "Corporate Strategy Process", desc: "Steps for defining enterprise-wide strategy" },
+        { id: "red-blue-ocean", name: "Red vs Blue Ocean", desc: "Existing markets vs. uncontested market spaces" },
+        { id: "mckinsey-7s", name: "McKinsey 7-S Framework", desc: "Strategy, Structure, Systems, Values, Style, Staff, Skills" },
+        { id: "strategy-pyramid", name: "Strategy Pyramid", desc: "Aligning corporate and functional strategies" },
+        { id: "where-to-play", name: "Where to Play / How to Win", desc: "Core questions in strategic decision-making" },
+        { id: "strategy-diamond", name: "Strategy Diamond", desc: "Arenas, Vehicles, Differentiators, Staging, Logic" },
+        { id: "vrio", name: "VRIO Analysis", desc: "Value, Rarity, Imitability, Organization" },
+        { id: "hypothesis-strategy", name: "Hypothesis Based Strategy", desc: "Testing strategic options through hypotheses" },
+        { id: "top-down-comm", name: "Top-Down Communication", desc: "Cascading decisions from leadership to teams" },
+        { id: "ecosystem-strategy", name: "Ecosystem Strategy", desc: "Focus on collaborating with external partner networks" },
+        { id: "ceo-scorecard", name: "6 Pillar CEO Scorecard", desc: "Performance measurement for leadership" },
+        { id: "op-model-bridge", name: "Operating Model Bridge", desc: "Linking strategy to operating model design" },
+        { id: "core-competencies", name: "Core Competencies", desc: "Unique skills providing competitive advantage" },
+        { id: "portfolio-of-initiatives", name: "Portfolio of Initiatives", desc: "Organizing a collection of strategic projects" },
+        { id: "eisenhower", name: "Eisenhower Matrix", desc: "Prioritize by categorization of Urgency/Importance" }
+    ];
+
+    window.appState = {
+        selectedFrameworks: [],
+        cleanProblem: ''
+    };
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const storedProblem = localStorage.getItem('Dainta_clean_problem');
+        
+        if (storedProblem && storedProblem.trim().length > 0) {
+            window.appState.cleanProblem = storedProblem;
+            document.getElementById('displayProblem').innerText = storedProblem;
+            document.getElementById('validatedHeader').classList.remove('hidden');
+            document.getElementById('directEntryBox').classList.add('hidden');
+        } else {
+            document.getElementById('directEntryBox').classList.remove('hidden');
+            document.getElementById('validatedHeader').classList.add('hidden');
+        }
+        
+        render();
+    });
+
+    function render() {
+        const container = document.getElementById('step-content');
+        container.innerHTML = '';
+        
+        const div = document.createElement('div');
+        div.className = 'space-y-6';
+        div.innerHTML = `
+            <div>
+                <h2 class="text-3xl font-bold font-inter text-gray-900 dark:text-slate-100">Select Decision Framework</h2>
+                <p class="text-gray-500 dark:text-slate-400 font-body">Choose a specific lens or let Dainta's Auto-Select engine find the optimal fit.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                ${FRAMEWORKS.map(f => {
+                    const isSelected = window.appState.selectedFrameworks.includes(f.id);
+                    let cardClasses = "card-elevate bg-white dark:bg-slate-900 border-gray-200 dark:border-slate-800 text-gray-900 dark:text-slate-100 hover:border-gray-300 dark:hover:border-slate-700 ";
+                    
+                    if (f.id === 'auto-select') {
+                        cardClasses += isSelected ? 'border-purple-600 bg-purple-50 dark:bg-purple-950/40 ring-2 ring-purple-600' : 'border-purple-200 dark:border-purple-900/60 bg-purple-50/50 dark:bg-purple-950/20';
+                    } else {
+                        cardClasses += isSelected ? 'border-blue-600 bg-blue-50 dark:bg-blue-950/40 ring-2 ring-blue-600' : '';
+                    }
+
+                    return `
+                        <div onclick="toggleFramework('${f.id}')" tabindex="0" onkeypress="if(event.key==='Enter')toggleFramework('${f.id}')"
+                             class="${cardClasses} focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-xl p-4 cursor-pointer transition">
+                            <h4 class="font-bold ${f.id === 'auto-select' ? 'text-purple-900 dark:text-purple-400' : 'text-gray-900 dark:text-slate-100'} mb-1">${f.name}</h4>
+                            <p class="text-xs ${f.id === 'auto-select' ? 'text-purple-700 dark:text-purple-300' : 'text-gray-500 dark:text-slate-400'} leading-relaxed">${f.desc}</p>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        `;
+        container.appendChild(div);
+    }
+
+    function toggleFramework(id) {
+        window.appState.selectedFrameworks = [id]; 
+        render();
+        document.getElementById('generateBtn').classList.remove('hidden');
+    }
+
+    async function runAgentTwo() {
+        const manualInput = document.getElementById('manualProblemInput');
+        const manualVal = manualInput ? manualInput.value.trim() : "";
+
+        if (manualVal.length > 0) {
+            window.appState.cleanProblem = manualVal;
+        } else {
+            const stored = localStorage.getItem('Dainta_clean_problem');
+            if (stored) window.appState.cleanProblem = stored;
+        }
+
+        if (!window.appState.cleanProblem || window.appState.cleanProblem.length < 10) {
+            alert("Please ensure your problem statement is provided before generating a solution.");
+            return;
+        }
+
+        const selectedId = window.appState.selectedFrameworks[0] || 'auto-select';
+        const btn = document.getElementById('generateBtn');
+        
+        btn.innerText = "Architecting Solution...";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch('/app', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    problem: window.appState.cleanProblem,
+                    framework_id: selectedId
+                })
+            });
+            
+            const data = await response.json();
+            
+            if(data.success) {
+                const resDiv = document.getElementById('result-content');
+                const renderArea = document.getElementById('analysis-render-area');
+                
+                resDiv.classList.remove('hidden');
+                renderArea.innerHTML = data.analysisData; 
+                
+                document.getElementById('step-content').classList.add('hidden');
+                document.getElementById('nav-container').classList.add('hidden');
+                document.getElementById('input-section').classList.add('hidden');
+            } else {
+                alert("Logic Error: " + (data.error || "Unknown error"));
+            }
+        } catch (error) {
+            alert("Network Error: Connection to Dainta failed.");
+        } finally {
+            btn.innerText = "Generate Solution";
+            btn.disabled = false;
+        }
+    }
+
+    function goBackToSelection() {
+        document.getElementById('result-content').classList.add('hidden');
+        document.getElementById('step-content').classList.remove('hidden');
+        document.getElementById('nav-container').classList.remove('hidden');
+        document.getElementById('input-section').classList.remove('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function clearProblem() {
+        localStorage.removeItem('Dainta_clean_problem');
+        window.appState.cleanProblem = '';
+        document.getElementById('manualProblemInput').value = '';
+        document.getElementById('validatedHeader').classList.add('hidden');
+        document.getElementById('directEntryBox').classList.remove('hidden');
+        window.appState.selectedFrameworks = [];
+        document.getElementById('generateBtn').classList.add('hidden');
+        render();
+    }
+</script>
+{% endblock %}
