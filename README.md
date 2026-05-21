@@ -1,7 +1,7 @@
-# Dainta
+# Dainta | Democratizing smarter decision making
 
 ## Overview
-Dainta is a decision intelligence tool that help users move from messy thoughts to smarter decisions.
+Dainta is a decision intelligence tool that help users move from messy thoughts to smarter decisions.  It achieves this by leveraging the power of reframing coupled with battle tested strategy and decision frameworks.
 
 
 ## Project Structure
